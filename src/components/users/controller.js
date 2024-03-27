@@ -3,7 +3,7 @@ const pool = require("../../database/conexion");
 const mysql = require("../../database/mysql");
 const model = require("./model");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const jwt = require("../../services/jwt");
 
 const getUsers = async (req, res) => {
   try {
@@ -117,11 +117,7 @@ const loginUser = async (req, res) => {
       return response.error(res, "Contraseña incorrecta", 401);
     }
 
-    const token = jwt.sign(
-      { id: user.ID, correo: user.CORREO },
-      process.env.ACCESS_TOKEN,
-      { expiresIn: "1h" }
-    );
+    const token = jwt.createToken(user);
     response.success(res, { token }, "Inicio de sesión exitoso", 200);
   } catch (error) {
     console.log(error);
