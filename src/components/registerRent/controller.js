@@ -17,6 +17,8 @@ const createRegisterRent = async (req, res) => {
   try {
     if (
       req.body &&
+      req.body.ID_CLIENTE &&
+      req.body.ID_VEHICULO &&
       req.body.FECHA_RENTA &&
       req.body.FECHA_ENTREGA &&
       req.body.FECHA_RETORNO &&
@@ -26,12 +28,7 @@ const createRegisterRent = async (req, res) => {
       req.body.DESTINO_DE_VIAJE &&
       req.body.ESTATUS
     ) {
-      const requestData = {
-        ...req.body,
-        ID_CLIENTE: req.params.idClient,
-        ID_VEHICULO: req.params.idVehicle,
-      };
-      await pool.query(mysql.insert(model.TABLA), requestData);
+      await pool.query(mysql.insert(model.TABLA), req.body);
       response.success(res, req.body, "Registro de renta creado", 201);
     } else {
       console.log(res);
@@ -43,60 +40,60 @@ const createRegisterRent = async (req, res) => {
   }
 };
 
-// const updateRegisterRent = async (req, res) => {
-//   try {
-//     if (req.body) {
-//       await pool.query(mysql.update(model.TABLA), [
-//         req.body,
-//         { ID: req.params.id },
-//       ]);
-//       response.success(res, req.body, "Registro de renta actualizado", 200);
-//     } else {
-//       console.log(error);
-//       response.error(res, "Hay datos faltantes", 400);
-//     }
-//   } catch (error) {
-//     console.log(error);
-//     response.error(res, "Internal Error", 500, error);
-//   }
-// };
+const updateRegisterRent = async (req, res) => {
+  try {
+    if (req.body) {
+      await pool.query(mysql.update(model.TABLA), [
+        req.body,
+        { ID: req.params.id },
+      ]);
+      response.success(res, req.body, "Registro de renta actualizado", 200);
+    } else {
+      console.log(error);
+      response.error(res, "Hay datos faltantes", 400);
+    }
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
 
-// const deactivateRegisterRent = async (req, res) => {
-//   try {
-//     await pool.query(mysql.update(model.TABLA), [
-//       { ESTATUS: 0 },
-//       { ID: req.params.id },
-//     ]);
-//     response.success(res, "", "Register Rent Deactivated", 200);
-//   } catch (error) {
-//     console.log(error);
-//     response.error(res, "Internal Error", 500, error);
-//   }
-// };
+const deactivateRegisterRent = async (req, res) => {
+  try {
+    await pool.query(mysql.update(model.TABLA), [
+      { ESTATUS: 0 },
+      { ID: req.params.id },
+    ]);
+    response.success(res, "", "Register Rent Deactivated", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
 
-// const getRegisterRentById = async (req, res) => {
-//   try {
-//     const [registerRent] = await pool.query(mysql.getById(model.TABLA), [
-//       req.params.id,
-//     ]);
+const getRegisterRentById = async (req, res) => {
+  try {
+    const [registerRent] = await pool.query(mysql.getById(model.TABLA), [
+      req.params.id,
+    ]);
 
-//     if (!registerRent) {
-//       response.error(res, "Register Rent no encontrado", 404);
-//     } else {
-//       response.success(res, registerRent, "Register Rent encontrado", 200);
-//     }
-//   } catch (error) {
-//     console.log(error);
-//     response.error(res, "Internal Error", 500, error);
-//   }
-// };
+    if (!registerRent) {
+      response.error(res, "Register Rent no encontrado", 404);
+    } else {
+      response.success(res, registerRent, "Register Rent encontrado", 200);
+    }
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
 
 //No se hizo la consulta para encontrar por ID, actualizar o eliminar porque el campo ID no existe en la base de datos
 
 module.exports = {
   getRegisterRent,
   createRegisterRent,
-  // updateRegisterRent,
-  // deactivateRegisterRent,
-  // getRegisterRentById
+  updateRegisterRent,
+  deactivateRegisterRent,
+  getRegisterRentById,
 };
