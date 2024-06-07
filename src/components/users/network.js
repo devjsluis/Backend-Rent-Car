@@ -6,6 +6,7 @@ const midAuth = require("../../middleware/mid-auth");
 router.get("/get", midAuth.isAuth, controller.getUsers);
 router.get("/get/:id", midAuth.isAuth, controller.getUserById);
 router.post("/create", midAuth.isAuth, controller.createUser);
+router.put("/reactivate/:id", controller.reactivateUser);
 router.post("/login", controller.loginUser);
 router.put("/update/:id", midAuth.isAuth, controller.updateUser);
 router.delete("/delete/:id", midAuth.isAuth, controller.deactivateUser);

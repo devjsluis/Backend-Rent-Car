@@ -19,7 +19,6 @@ const createElementsCatalog = async (req, res) => {
       await pool.query(mysql.insert(model.TABLA), req.body);
       response.success(res, req.body, "Elementos de catálogo creados", 201);
     } else {
-      console.log(res);
       response.error(res, "Hay datos faltantes", 400);
     }
   } catch (error) {

@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/get", controller.getVehicles);
+router.get("/getVehicles", controller.getVehiclesMarca);
 router.get("/get/:id", controller.getVehicleById);
 router.post("/create", controller.createVehicle);
 router.put("/update/:id", controller.updateVehicle);

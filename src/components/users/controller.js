@@ -7,7 +7,7 @@ const jwt = require("../../services/jwt");
 
 const getUsers = async (req, res) => {
   try {
-    const data = await pool.query(mysql.getAll(model.TABLA));
+    const data = await pool.query(mysql.getEverything(model.TABLA));
     response.success(res, data, "Lista de Usuarios", 200);
   } catch (error) {
     console.log(error);
@@ -65,6 +65,19 @@ const updateUser = async (req, res) => {
     } else {
       response.error(res, "Hay datos faltantes", 400);
     }
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
+const reactivateUser = async (req, res) => {
+  try {
+    await pool.query(mysql.update(model.TABLA), [
+      { ESTATUS: 1 },
+      { ID: req.params.id },
+    ]);
+    response.success(res, "", "User reactivated", 200);
   } catch (error) {
     console.log(error);
     response.error(res, "Internal Error", 500, error);
@@ -129,6 +142,7 @@ module.exports = {
   getUsers,
   getUserById,
   createUser,
+  reactivateUser,
   updateUser,
   deactivateUser,
   loginUser,

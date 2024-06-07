@@ -5,8 +5,38 @@ const model = require("./model");
 
 const getClients = async (req, res) => {
   try {
-    const data = await pool.query(mysql.getAll(model.TABLA));
+    const data = await pool.query(mysql.getAllClients(model.TABLA));
     response.success(res, data, "Lista de clientes", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
+const getClientsByName = async (req, res) => {
+  try {
+    const data = await pool.query(mysql.getClientsByNames(model.TABLA));
+    response.success(res, data, "Lista de clientes", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
+const getNewClients = async (req, res) => {
+  try {
+    const data = await pool.query(mysql.getNewClients(model.VIEW));
+    response.success(res, data, "Lista de clientes", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
+const getClients15Days = async (req, res) => {
+  try {
+    const data = await pool.query(mysql.getAll7Days(model.VIEW2));
+    response.success(res, data, "Clientes en los últimos 15 días", 200);
   } catch (error) {
     console.log(error);
     response.error(res, "Internal Error", 500, error);
@@ -67,6 +97,19 @@ const deactivateClient = async (req, res) => {
   }
 };
 
+const reactivateClient = async (req, res) => {
+  try {
+    await pool.query(mysql.update(model.TABLA), [
+      { ESTATUS: 1 },
+      { ID: req.params.id },
+    ]);
+    response.success(res, "", "Client reactivated", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
 const getClientById = async (req, res) => {
   try {
     const [client] = await pool.query(mysql.getById(model.TABLA), [
@@ -87,7 +130,11 @@ const getClientById = async (req, res) => {
 module.exports = {
   getClients,
   getClientById,
+  getClientsByName,
+  getClients15Days,
+  getNewClients,
   createClient,
   updateClient,
   deactivateClient,
+  reactivateClient,
 };

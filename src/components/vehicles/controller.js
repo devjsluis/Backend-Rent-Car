@@ -13,6 +13,16 @@ const getVehicles = async (req, res) => {
   }
 };
 
+const getVehiclesMarca = async (req, res) => {
+  try {
+    const data = await pool.query(mysql.getVehiclesMarcas());
+    response.success(res, data, "Lista de vehículos", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
 const createVehicle = async (req, res) => {
   try {
     if (
@@ -87,6 +97,7 @@ const getVehicleById = async (req, res) => {
 module.exports = {
   getVehicles,
   getVehicleById,
+  getVehiclesMarca,
   createVehicle,
   updateVehicle,
   deactivateVehicle,

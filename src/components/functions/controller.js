@@ -19,7 +19,6 @@ const createFunction = async (req, res) => {
       await pool.query(mysql.insert(model.TABLA), req.body);
       response.success(res, req.body, "Función creada", 201);
     } else {
-      console.log(res);
       response.error(res, "Hay datos faltantes", 400);
     }
   } catch (error) {

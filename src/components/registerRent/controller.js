@@ -5,8 +5,18 @@ const model = require("./model");
 
 const getRegisterRent = async (req, res) => {
   try {
-    const data = await pool.query(mysql.getAll(model.TABLA));
+    const data = await pool.query(mysql.getAllRegister());
     response.success(res, data, "Lista de registro de rentas", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
+const getRegisterRent7Days = async (req, res) => {
+  try {
+    const data = await pool.query(mysql.getAll7Days(model.VIEW));
+    response.success(res, data, "Ventas en los últimos 7 días", 200);
   } catch (error) {
     console.log(error);
     response.error(res, "Internal Error", 500, error);
@@ -58,6 +68,19 @@ const updateRegisterRent = async (req, res) => {
   }
 };
 
+const reactivateRegisterRent = async (req, res) => {
+  try {
+    await pool.query(mysql.update(model.TABLA), [
+      { ESTATUS: 1 },
+      { ID: req.params.id },
+    ]);
+    response.success(res, "", "Rent register reactivated", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
 const deactivateRegisterRent = async (req, res) => {
   try {
     await pool.query(mysql.update(model.TABLA), [
@@ -92,8 +115,10 @@ const getRegisterRentById = async (req, res) => {
 
 module.exports = {
   getRegisterRent,
+  getRegisterRent7Days,
   createRegisterRent,
   updateRegisterRent,
+  reactivateRegisterRent,
   deactivateRegisterRent,
   getRegisterRentById,
 };
