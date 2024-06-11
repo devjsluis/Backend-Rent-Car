@@ -25,8 +25,12 @@ const getAll7Days = (tableName) => {
   return `SELECT * FROM ${tableName}`;
 };
 
-const getEverything = (tableName) => {
-  return `SELECT * FROM ${tableName}`;
+const getEverything = (tableName, whereClause = "") => {
+  let query = `SELECT * FROM ${tableName}`;
+  if (whereClause) {
+    query += ` ${whereClause}`;
+  }
+  return query;
 };
 
 const getAllClients = (tableName) => {

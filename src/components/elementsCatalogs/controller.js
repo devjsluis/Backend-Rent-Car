@@ -13,6 +13,50 @@ const getElementsCatalog = async (req, res) => {
   }
 };
 
+const getTipos = async (req, res) => {
+  try {
+    const query = mysql.getEverything(model.TABLA, "WHERE ID_CATALOGO = 1");
+    const data = await pool.query(query);
+    response.success(res, data, "Lista de tipos de vehículo registrados", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
+const getMarcas = async (req, res) => {
+  try {
+    const query = mysql.getEverything(model.TABLA, "WHERE ID_CATALOGO = 2");
+    const data = await pool.query(query);
+    response.success(res, data, "Lista de marcas registradas", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
+const getModelos = async (req, res) => {
+  try {
+    const query = mysql.getEverything(model.TABLA, "WHERE ID_CATALOGO = 3");
+    const data = await pool.query(query);
+    response.success(res, data, "Lista de modelos registrados", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
+const getAnios = async (req, res) => {
+  try {
+    const query = mysql.getEverything(model.TABLA, "WHERE ID_CATALOGO = 4");
+    const data = await pool.query(query);
+    response.success(res, data, "Lista de años registrados", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
 const createElementsCatalog = async (req, res) => {
   try {
     if (req.body && req.body.DESCRIPCION && req.body.ID_CATALOGO) {
@@ -50,11 +94,26 @@ const updateElementsCatalog = async (req, res) => {
   }
 };
 
-//Delete definitivo
 const deleteElementsCatalog = async (req, res) => {
   try {
-    await pool.query(mysql.deleteQuery(model.TABLA), [{ ID: req.params.id }]);
+    await pool.query(mysql.update(model.TABLA), [
+      { ESTATUS: 0 },
+      { ID: req.params.id },
+    ]);
     response.success(res, "", "Elementos de catálogo eliminados", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
+const reactivateElementsCatalog = async (req, res) => {
+  try {
+    await pool.query(mysql.update(model.TABLA), [
+      { ESTATUS: 1 },
+      { ID: req.params.id },
+    ]);
+    response.success(res, "", "Element reactivated", 200);
   } catch (error) {
     console.log(error);
     response.error(res, "Internal Error", 500, error);
@@ -90,4 +149,9 @@ module.exports = {
   updateElementsCatalog,
   deleteElementsCatalog,
   getElementsCatalogById,
+  getTipos,
+  getMarcas,
+  getModelos,
+  getAnios,
+  reactivateElementsCatalog,
 };
