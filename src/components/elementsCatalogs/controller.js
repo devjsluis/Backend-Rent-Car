@@ -60,7 +60,20 @@ const getAnios = async (req, res) => {
 const createElementsCatalog = async (req, res) => {
   try {
     if (req.body && req.body.DESCRIPCION && req.body.ID_CATALOGO) {
-      await pool.query(mysql.insert(model.TABLA), req.body);
+      const queryCheck = mysql.checkIfDescriptionExists(model.TABLA);
+      const exists = await pool.query(queryCheck, [req.body.DESCRIPCION]);
+
+      // Verificar si la descripción existe en el mismo catálogo
+      const sameCatalogExists = exists.find(
+        (item) => item.ID_CATALOGO === req.body.ID_CATALOGO
+      );
+      if (sameCatalogExists) {
+        response.error(res, "La descripción ya existe para este catálogo", 409); // 409 Conflict
+        return;
+      }
+
+      const queryInsert = mysql.insert(model.TABLA);
+      await pool.query(queryInsert, req.body);
       response.success(res, req.body, "Elementos de catálogo creados", 201);
     } else {
       response.error(res, "Hay datos faltantes", 400);
@@ -73,7 +86,19 @@ const createElementsCatalog = async (req, res) => {
 
 const updateElementsCatalog = async (req, res) => {
   try {
-    if (req.body) {
+    if (req.body && req.body.DESCRIPCION) {
+      const queryCheck = mysql.checkIfDescriptionExists(model.TABLA);
+      const exists = await pool.query(queryCheck, [req.body.DESCRIPCION]);
+
+      // Verificar si la descripción existe en otro registro (diferente ID)
+      const sameDescriptionExists = exists.find(
+        (item) => item.ID !== req.params.id
+      );
+      if (sameDescriptionExists) {
+        response.error(res, "La descripción ya existe en otro elemento", 409); // 409 Conflict
+        return;
+      }
+
       await pool.query(mysql.update(model.TABLA), [
         req.body,
         { ID: req.params.id },
@@ -85,7 +110,6 @@ const updateElementsCatalog = async (req, res) => {
         200
       );
     } else {
-      console.log(error);
       response.error(res, "Hay datos faltantes", 400);
     }
   } catch (error) {

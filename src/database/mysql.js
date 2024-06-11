@@ -84,7 +84,12 @@ const getByEmail = (tableName) => {
   return `SELECT * FROM ${tableName} WHERE CORREO = ?`;
 };
 
+const checkIfDescriptionExists = (tableName) => {
+  return `SELECT * FROM ${tableName} WHERE DESCRIPCION = ?`;
+};
+
 module.exports = {
+  checkIfDescriptionExists,
   getAll,
   getAll7Days,
   getEverything,
