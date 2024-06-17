@@ -99,9 +99,10 @@ const deactivateUser = async (req, res) => {
 
 const getUserById = async (req, res) => {
   try {
-    const [user] = await pool.query(mysql.getById(model.TABLA), [
-      req.params.id,
-    ]);
+    const [user] = await pool.query(
+      mysql.getEverything(model.TABLA, "WHERE ESTATUS = 1 AND ID = ?"),
+      [req.params.id]
+    );
 
     if (!user) {
       response.error(res, "Usuario no encontrado", 404);
@@ -121,7 +122,10 @@ const loginUser = async (req, res) => {
       return response.error(res, "Correo y contraseña son requeridos", 400);
     }
 
-    const [user] = await pool.query(mysql.getByEmail(model.TABLA), CORREO);
+    const [user] = await pool.query(
+      mysql.getEverything(model.TABLA, "WHERE CORREO = ?"),
+      CORREO
+    );
     if (!user) {
       return response.error(res, "Usuario no encontrado", 404);
     }

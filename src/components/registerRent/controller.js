@@ -5,7 +5,29 @@ const model = require("./model");
 
 const getRegisterRent = async (req, res) => {
   try {
-    const data = await pool.query(mysql.getAllRegister());
+    const columns = `
+    r.*, 
+    c.NOMBRE AS NOMBRE_CLIENTE, 
+    c.APELLIDOS AS APELLIDOS_CLIENTE, 
+    v.ID_MARCA, 
+    v.ID_MODELO, 
+    v.ID_ANIO, 
+    m.DESCRIPCION AS MARCA, 
+    mo.DESCRIPCION AS MODELO, 
+    a.DESCRIPCION AS ANIO
+  `;
+
+    const whereClause = `
+    INNER JOIN clientes c ON r.ID_CLIENTE = c.ID
+    INNER JOIN vehiculos v ON r.ID_VEHICULO = v.ID
+    INNER JOIN elementos_catalogos m ON v.ID_MARCA = m.ID
+    INNER JOIN elementos_catalogos mo ON v.ID_MODELO = mo.ID
+    INNER JOIN elementos_catalogos a ON v.ID_ANIO = a.ID 
+    ORDER BY r.ID ASC
+  `;
+    const data = await pool.query(
+      mysql.getEverything("registro_rentas r", whereClause, columns)
+    );
     response.success(res, data, "Lista de registro de rentas", 200);
   } catch (error) {
     console.log(error);
@@ -15,7 +37,7 @@ const getRegisterRent = async (req, res) => {
 
 const getRegisterRent7Days = async (req, res) => {
   try {
-    const data = await pool.query(mysql.getAll7Days(model.VIEW));
+    const data = await pool.query(mysql.getEverything(model.VIEW));
     response.success(res, data, "Ventas en los últimos 7 días", 200);
   } catch (error) {
     console.log(error);
@@ -96,9 +118,10 @@ const deactivateRegisterRent = async (req, res) => {
 
 const getRegisterRentById = async (req, res) => {
   try {
-    const [registerRent] = await pool.query(mysql.getById(model.TABLA), [
-      req.params.id,
-    ]);
+    const [registerRent] = await pool.query(
+      mysql.getEverything(model.TABLA, "WHERE ESTATUS = 1 AND ID = ?"),
+      [req.params.id]
+    );
 
     if (!registerRent) {
       response.error(res, "Register Rent no encontrado", 404);

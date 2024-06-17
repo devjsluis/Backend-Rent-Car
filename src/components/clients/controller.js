@@ -5,7 +5,20 @@ const model = require("./model");
 
 const getClients = async (req, res) => {
   try {
-    const data = await pool.query(mysql.getAllClients(model.TABLA));
+    const whereClause = `
+      WHERE
+      clientes.ID_USUARIO_ALTA = usuarios.ID
+      ORDER BY clientes.ID ASC
+    `;
+
+    const columns = `
+      clientes.*,
+      usuarios.NOMBRE as 'NOMBRE_USUARIO_ALTA',
+      usuarios.APELLIDOS AS 'APELLIDO_USUARIO_ALTA'
+    `;
+    const data = await pool.query(
+      mysql.getEverything("clientes, usuarios", whereClause, columns)
+    );
     response.success(res, data, "Lista de clientes", 200);
   } catch (error) {
     console.log(error);
@@ -15,7 +28,12 @@ const getClients = async (req, res) => {
 
 const getClientsByName = async (req, res) => {
   try {
-    const data = await pool.query(mysql.getClientsByNames(model.TABLA));
+    const data = await pool.query(
+      mysql.getEverything(
+        model.TABLA,
+        "WHERE clientes.ESTATUS=1 ORDER BY clientes.APELLIDOS ASC"
+      )
+    );
     response.success(res, data, "Lista de clientes", 200);
   } catch (error) {
     console.log(error);
@@ -25,7 +43,7 @@ const getClientsByName = async (req, res) => {
 
 const getNewClients = async (req, res) => {
   try {
-    const data = await pool.query(mysql.getNewClients(model.VIEW));
+    const data = await pool.query(mysql.getEverything(model.VIEW));
     response.success(res, data, "Lista de clientes", 200);
   } catch (error) {
     console.log(error);
@@ -35,7 +53,7 @@ const getNewClients = async (req, res) => {
 
 const getClients15Days = async (req, res) => {
   try {
-    const data = await pool.query(mysql.getAll7Days(model.VIEW2));
+    const data = await pool.query(mysql.getEverything(model.VIEW2));
     response.success(res, data, "Clientes en los últimos 15 días", 200);
   } catch (error) {
     console.log(error);
@@ -112,9 +130,10 @@ const reactivateClient = async (req, res) => {
 
 const getClientById = async (req, res) => {
   try {
-    const [client] = await pool.query(mysql.getById(model.TABLA), [
-      req.params.id,
-    ]);
+    const [client] = await pool.query(
+      mysql.getEverything(model.TABLA, "WHERE ESTATUS = 1 AND ID = ?"),
+      [req.params.id]
+    );
 
     if (!client) {
       response.error(res, "Cliente no encontrado", 404);

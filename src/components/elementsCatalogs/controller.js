@@ -5,7 +5,7 @@ const model = require("./model");
 
 const getElementsCatalog = async (req, res) => {
   try {
-    const data = await pool.query(mysql.getWithoutStatus(model.TABLA));
+    const data = await pool.query(mysql.getEverything(model.TABLA));
     response.success(res, data, "Lista de elementos de catálogo", 200);
   } catch (error) {
     console.log(error);
@@ -16,6 +16,20 @@ const getElementsCatalog = async (req, res) => {
 const getTipos = async (req, res) => {
   try {
     const query = mysql.getEverything(model.TABLA, "WHERE ID_CATALOGO = 1");
+    const data = await pool.query(query);
+    response.success(res, data, "Lista de tipos de vehículo registrados", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
+const getTipos2 = async (req, res) => {
+  try {
+    const query = mysql.getEverything(
+      model.TABLA,
+      `WHERE ID_CATALOGO = 1 ORDER BY ${model.TABLA}.DESCRIPCION ASC`
+    );
     const data = await pool.query(query);
     response.success(res, data, "Lista de tipos de vehículo registrados", 200);
   } catch (error) {
@@ -35,9 +49,37 @@ const getMarcas = async (req, res) => {
   }
 };
 
+const getMarcas2 = async (req, res) => {
+  try {
+    const query = mysql.getEverything(
+      model.TABLA,
+      `WHERE ID_CATALOGO = 2 ORDER BY ${model.TABLA}.DESCRIPCION ASC`
+    );
+    const data = await pool.query(query);
+    response.success(res, data, "Lista de marcas registradas", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
 const getModelos = async (req, res) => {
   try {
     const query = mysql.getEverything(model.TABLA, "WHERE ID_CATALOGO = 3");
+    const data = await pool.query(query);
+    response.success(res, data, "Lista de modelos registrados", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
+const getModelos2 = async (req, res) => {
+  try {
+    const query = mysql.getEverything(
+      model.TABLA,
+      `WHERE ID_CATALOGO = 3 ORDER BY ${model.TABLA}.DESCRIPCION ASC`
+    );
     const data = await pool.query(query);
     response.success(res, data, "Lista de modelos registrados", 200);
   } catch (error) {
@@ -57,10 +99,27 @@ const getAnios = async (req, res) => {
   }
 };
 
+const getAnios2 = async (req, res) => {
+  try {
+    const query = mysql.getEverything(
+      model.TABLA,
+      `WHERE ID_CATALOGO = 4 ORDER BY ${model.TABLA}.DESCRIPCION ASC`
+    );
+    const data = await pool.query(query);
+    response.success(res, data, "Lista de años registrados", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
 const createElementsCatalog = async (req, res) => {
   try {
     if (req.body && req.body.DESCRIPCION && req.body.ID_CATALOGO) {
-      const queryCheck = mysql.checkIfDescriptionExists(model.TABLA);
+      const queryCheck = mysql.getEverything(
+        model.TABLA,
+        "WHERE DESCRIPCION = ?"
+      );
       const exists = await pool.query(queryCheck, [req.body.DESCRIPCION]);
 
       // Verificar si la descripción existe en el mismo catálogo
@@ -87,7 +146,10 @@ const createElementsCatalog = async (req, res) => {
 const updateElementsCatalog = async (req, res) => {
   try {
     if (req.body && req.body.DESCRIPCION) {
-      const queryCheck = mysql.checkIfDescriptionExists(model.TABLA);
+      const queryCheck = mysql.getEverything(
+        model.TABLA,
+        "WHERE DESCRIPCION = ?"
+      );
       const exists = await pool.query(queryCheck, [req.body.DESCRIPCION]);
 
       // Verificar si la descripción existe en otro registro (diferente ID)
@@ -147,7 +209,7 @@ const reactivateElementsCatalog = async (req, res) => {
 const getElementsCatalogById = async (req, res) => {
   try {
     const [elementsCatalog] = await pool.query(
-      mysql.getByIdWithoutStatus(model.TABLA),
+      mysql.getEverything(model.TABLA, "WHERE ID = ?"),
       [req.params.id]
     );
 
@@ -178,4 +240,8 @@ module.exports = {
   getModelos,
   getAnios,
   reactivateElementsCatalog,
+  getTipos2,
+  getMarcas2,
+  getModelos2,
+  getAnios2,
 };
