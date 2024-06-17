@@ -5,7 +5,7 @@ const model = require("./model");
 
 const getVehicles = async (req, res) => {
   try {
-    const query = mysql.getEverything(model.TABLA, "WHERE ID_CATALOGO = 1");
+    const query = mysql.getEverything(model.TABLA, `WHERE ${model.CONDICION1}`);
     const data = await pool.query(query);
     response.success(res, data, "Lista de vehículos", 200);
   } catch (error) {
@@ -16,21 +16,10 @@ const getVehicles = async (req, res) => {
 
 const getVehiclesMarca = async (req, res) => {
   try {
-    const whereClause = `
-      LEFT JOIN elementos_catalogos marca ON v.ID_MARCA = marca.ID
-      LEFT JOIN elementos_catalogos modelo ON v.ID_MODELO = modelo.ID
-      LEFT JOIN elementos_catalogos anio ON v.ID_ANIO = anio.ID
-      ORDER BY marca.DESCRIPCION ASC
-    `;
-
-    const columns = `
-      v.*,
-      marca.DESCRIPCION AS MARCA,
-      modelo.DESCRIPCION AS MODELO,
-      anio.DESCRIPCION AS ANIO
-    `;
+    const whereClause = model.CONDICIONES1;
+    const columns = model.CAMPOS1;
     const data = await pool.query(
-      mysql.getEverything("vehiculos v", whereClause, columns)
+      mysql.getEverything(model.TABLA2, whereClause, columns)
     );
     response.success(res, data, "Lista de vehículos", 200);
   } catch (error) {
@@ -41,19 +30,11 @@ const getVehiclesMarca = async (req, res) => {
 
 const getVehiclesAll = async (req, res) => {
   try {
-    const whereClause = `
-    LEFT JOIN elementos_catalogos marca ON v.ID_MARCA = marca.ID
-    LEFT JOIN elementos_catalogos modelo ON v.ID_MODELO = modelo.ID
-    LEFT JOIN elementos_catalogos anio ON v.ID_ANIO = anio.ID
-    ORDER BY v.ID ASC`;
-    const columns = `
-    v.*,
-    marca.DESCRIPCION AS MARCA,
-    modelo.DESCRIPCION AS MODELO,
-    anio.DESCRIPCION AS ANIO`;
+    const whereClause = model.CONDICIONES2;
+    const columns = model.CAMPOS1;
 
     const data = await pool.query(
-      mysql.getEverything("vehiculos v", whereClause, columns)
+      mysql.getEverything(model.TABLA2, whereClause, columns)
     );
     response.success(res, data, "Lista de vehículos", 200);
   } catch (error) {
@@ -156,7 +137,7 @@ const reactivateVehicle = async (req, res) => {
 const getVehicleById = async (req, res) => {
   try {
     const [vehiculo] = await pool.query(
-      mysql.getEverything(model.TABLA, "WHERE ESTATUS = 1 AND ID = ?"),
+      mysql.getEverything(model.TABLA, `WHERE ${model.CONDICION2}`),
       [req.params.id]
     );
 

@@ -5,28 +5,10 @@ const model = require("./model");
 
 const getRegisterRent = async (req, res) => {
   try {
-    const columns = `
-    r.*, 
-    c.NOMBRE AS NOMBRE_CLIENTE, 
-    c.APELLIDOS AS APELLIDOS_CLIENTE, 
-    v.ID_MARCA, 
-    v.ID_MODELO, 
-    v.ID_ANIO, 
-    m.DESCRIPCION AS MARCA, 
-    mo.DESCRIPCION AS MODELO, 
-    a.DESCRIPCION AS ANIO
-  `;
-
-    const whereClause = `
-    INNER JOIN clientes c ON r.ID_CLIENTE = c.ID
-    INNER JOIN vehiculos v ON r.ID_VEHICULO = v.ID
-    INNER JOIN elementos_catalogos m ON v.ID_MARCA = m.ID
-    INNER JOIN elementos_catalogos mo ON v.ID_MODELO = mo.ID
-    INNER JOIN elementos_catalogos a ON v.ID_ANIO = a.ID 
-    ORDER BY r.ID ASC
-  `;
+    const columns = model.COLUMNAS1;
+    const whereClause = model.CONDICIONES1;
     const data = await pool.query(
-      mysql.getEverything("registro_rentas r", whereClause, columns)
+      mysql.getEverything(model.TABLA2, whereClause, columns)
     );
     response.success(res, data, "Lista de registro de rentas", 200);
   } catch (error) {
@@ -119,7 +101,7 @@ const deactivateRegisterRent = async (req, res) => {
 const getRegisterRentById = async (req, res) => {
   try {
     const [registerRent] = await pool.query(
-      mysql.getEverything(model.TABLA, "WHERE ESTATUS = 1 AND ID = ?"),
+      mysql.getEverything(model.TABLA, model.CONDICION2),
       [req.params.id]
     );
 

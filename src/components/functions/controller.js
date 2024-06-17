@@ -59,7 +59,7 @@ const deleteFunction = async (req, res) => {
 const getFunctionById = async (req, res) => {
   try {
     const [elementsCatalog] = await pool.query(
-      mysql.getEverything(model.TABLA, "WHERE ID = ?"),
+      mysql.getEverything(model.TABLA, `WHERE ${model.CONDICION1}`),
       [req.params.id]
     );
 

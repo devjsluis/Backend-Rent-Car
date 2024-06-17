@@ -15,7 +15,7 @@ const getElementsCatalog = async (req, res) => {
 
 const getTipos = async (req, res) => {
   try {
-    const query = mysql.getEverything(model.TABLA, "WHERE ID_CATALOGO = 1");
+    const query = mysql.getEverything(model.TABLA, `WHERE ${model.CONDICION1}`);
     const data = await pool.query(query);
     response.success(res, data, "Lista de tipos de vehículo registrados", 200);
   } catch (error) {
@@ -28,7 +28,7 @@ const getTipos2 = async (req, res) => {
   try {
     const query = mysql.getEverything(
       model.TABLA,
-      `WHERE ID_CATALOGO = 1 ORDER BY ${model.TABLA}.DESCRIPCION ASC`
+      `WHERE ${model.CONDICION1} ORDER BY ${model.CAMPO1} ASC`
     );
     const data = await pool.query(query);
     response.success(res, data, "Lista de tipos de vehículo registrados", 200);
@@ -40,7 +40,7 @@ const getTipos2 = async (req, res) => {
 
 const getMarcas = async (req, res) => {
   try {
-    const query = mysql.getEverything(model.TABLA, "WHERE ID_CATALOGO = 2");
+    const query = mysql.getEverything(model.TABLA, `WHERE ${model.CONDICION2}`);
     const data = await pool.query(query);
     response.success(res, data, "Lista de marcas registradas", 200);
   } catch (error) {
@@ -53,7 +53,7 @@ const getMarcas2 = async (req, res) => {
   try {
     const query = mysql.getEverything(
       model.TABLA,
-      `WHERE ID_CATALOGO = 2 ORDER BY ${model.TABLA}.DESCRIPCION ASC`
+      `WHERE ${model.CONDICION2} ORDER BY ${model.CAMPO1} ASC`
     );
     const data = await pool.query(query);
     response.success(res, data, "Lista de marcas registradas", 200);
@@ -65,7 +65,7 @@ const getMarcas2 = async (req, res) => {
 
 const getModelos = async (req, res) => {
   try {
-    const query = mysql.getEverything(model.TABLA, "WHERE ID_CATALOGO = 3");
+    const query = mysql.getEverything(model.TABLA, `WHERE ${model.CONDICION3}`);
     const data = await pool.query(query);
     response.success(res, data, "Lista de modelos registrados", 200);
   } catch (error) {
@@ -78,7 +78,7 @@ const getModelos2 = async (req, res) => {
   try {
     const query = mysql.getEverything(
       model.TABLA,
-      `WHERE ID_CATALOGO = 3 ORDER BY ${model.TABLA}.DESCRIPCION ASC`
+      `WHERE ${model.CONDICION3} ORDER BY ${model.CAMPO1} ASC`
     );
     const data = await pool.query(query);
     response.success(res, data, "Lista de modelos registrados", 200);
@@ -90,7 +90,7 @@ const getModelos2 = async (req, res) => {
 
 const getAnios = async (req, res) => {
   try {
-    const query = mysql.getEverything(model.TABLA, "WHERE ID_CATALOGO = 4");
+    const query = mysql.getEverything(model.TABLA, `WHERE ${model.CONDICION4}`);
     const data = await pool.query(query);
     response.success(res, data, "Lista de años registrados", 200);
   } catch (error) {
@@ -103,7 +103,7 @@ const getAnios2 = async (req, res) => {
   try {
     const query = mysql.getEverything(
       model.TABLA,
-      `WHERE ID_CATALOGO = 4 ORDER BY ${model.TABLA}.DESCRIPCION ASC`
+      `WHERE ${model.CONDICION4} ORDER BY ${model.CAMPO1} ASC`
     );
     const data = await pool.query(query);
     response.success(res, data, "Lista de años registrados", 200);
@@ -118,7 +118,7 @@ const createElementsCatalog = async (req, res) => {
     if (req.body && req.body.DESCRIPCION && req.body.ID_CATALOGO) {
       const queryCheck = mysql.getEverything(
         model.TABLA,
-        "WHERE DESCRIPCION = ?"
+        `WHERE ${model.CONDICION5}`
       );
       const exists = await pool.query(queryCheck, [req.body.DESCRIPCION]);
 
@@ -148,7 +148,7 @@ const updateElementsCatalog = async (req, res) => {
     if (req.body && req.body.DESCRIPCION) {
       const queryCheck = mysql.getEverything(
         model.TABLA,
-        "WHERE DESCRIPCION = ?"
+        `WHERE ${model.CONDICION5}`
       );
       const exists = await pool.query(queryCheck, [req.body.DESCRIPCION]);
 
@@ -209,7 +209,7 @@ const reactivateElementsCatalog = async (req, res) => {
 const getElementsCatalogById = async (req, res) => {
   try {
     const [elementsCatalog] = await pool.query(
-      mysql.getEverything(model.TABLA, "WHERE ID = ?"),
+      mysql.getEverything(model.TABLA, `WHERE ${model.CONDICION6}`),
       [req.params.id]
     );
 

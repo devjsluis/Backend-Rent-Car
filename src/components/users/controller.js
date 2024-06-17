@@ -100,7 +100,7 @@ const deactivateUser = async (req, res) => {
 const getUserById = async (req, res) => {
   try {
     const [user] = await pool.query(
-      mysql.getEverything(model.TABLA, "WHERE ESTATUS = 1 AND ID = ?"),
+      mysql.getEverything(model.TABLA, `WHERE ${model.CONDICION1}`),
       [req.params.id]
     );
 
@@ -123,7 +123,7 @@ const loginUser = async (req, res) => {
     }
 
     const [user] = await pool.query(
-      mysql.getEverything(model.TABLA, "WHERE CORREO = ?"),
+      mysql.getEverything(model.TABLA, `WHERE ${model.CONDICION2}`),
       CORREO
     );
     if (!user) {

@@ -7,17 +7,21 @@ const getClients = async (req, res) => {
   try {
     const whereClause = `
       WHERE
-      clientes.ID_USUARIO_ALTA = usuarios.ID
-      ORDER BY clientes.ID ASC
+      ${model.CAMPO1} = ${model.CAMPO2}
+      ORDER BY ${model.CAMPO3} ASC
     `;
 
     const columns = `
-      clientes.*,
-      usuarios.NOMBRE as 'NOMBRE_USUARIO_ALTA',
-      usuarios.APELLIDOS AS 'APELLIDO_USUARIO_ALTA'
+      ${model.CAMPO4},
+      ${model.CAMPO5},
+      ${model.CAMPO6}
     `;
     const data = await pool.query(
-      mysql.getEverything("clientes, usuarios", whereClause, columns)
+      mysql.getEverything(
+        `${model.TABLA1}, ${model.TABLA2}`,
+        whereClause,
+        columns
+      )
     );
     response.success(res, data, "Lista de clientes", 200);
   } catch (error) {
@@ -30,8 +34,8 @@ const getClientsByName = async (req, res) => {
   try {
     const data = await pool.query(
       mysql.getEverything(
-        model.TABLA,
-        "WHERE clientes.ESTATUS=1 ORDER BY clientes.APELLIDOS ASC"
+        model.TABLA1,
+        `WHERE ${model.CONDICION1} ORDER BY ${model.CAMPO7} ASC`
       )
     );
     response.success(res, data, "Lista de clientes", 200);
@@ -73,7 +77,7 @@ const createClient = async (req, res) => {
       req.body.ESTATUS &&
       req.body.ID_USUARIO_ALTA
     ) {
-      await pool.query(mysql.insert(model.TABLA), req.body);
+      await pool.query(mysql.insert(model.TABLA1), req.body);
       response.success(res, req.body, "Cliente creado", 201);
     } else {
       response.error(res, "Hay datos faltantes", 400);
@@ -87,7 +91,7 @@ const createClient = async (req, res) => {
 const updateClient = async (req, res) => {
   try {
     if (req.body) {
-      await pool.query(mysql.update(model.TABLA), [
+      await pool.query(mysql.update(model.TABLA1), [
         req.body,
         { ID: req.params.id },
       ]);
@@ -104,7 +108,7 @@ const updateClient = async (req, res) => {
 
 const deactivateClient = async (req, res) => {
   try {
-    await pool.query(mysql.update(model.TABLA), [
+    await pool.query(mysql.update(model.TABLA1), [
       { ESTATUS: 0 },
       { ID: req.params.id },
     ]);
@@ -117,7 +121,7 @@ const deactivateClient = async (req, res) => {
 
 const reactivateClient = async (req, res) => {
   try {
-    await pool.query(mysql.update(model.TABLA), [
+    await pool.query(mysql.update(model.TABLA1), [
       { ESTATUS: 1 },
       { ID: req.params.id },
     ]);
@@ -131,7 +135,7 @@ const reactivateClient = async (req, res) => {
 const getClientById = async (req, res) => {
   try {
     const [client] = await pool.query(
-      mysql.getEverything(model.TABLA, "WHERE ESTATUS = 1 AND ID = ?"),
+      mysql.getEverything(model.TABLA1, `WHERE ${model.CONDICION2}`),
       [req.params.id]
     );
 

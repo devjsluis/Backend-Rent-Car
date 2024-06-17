@@ -59,7 +59,7 @@ const deleteRol = async (req, res) => {
 const getRolById = async (req, res) => {
   try {
     const [rol] = await pool.query(
-      mysql.getEverything(model.TABLA, "WHERE ID = ?"),
+      mysql.getEverything(model.TABLA, `WHERE ${model.CONDICION1}`),
       [req.params.id]
     );
 

@@ -58,7 +58,7 @@ const deleteCatalog = async (req, res) => {
 const getCatalogById = async (req, res) => {
   try {
     const [catalog] = await pool.query(
-      mysql.getEverything(model.TABLA, "WHERE ID = ?"),
+      mysql.getEverything(model.TABLA, `WHERE ${model.CAMPO1} = ?`),
       [req.params.id]
     );
 
