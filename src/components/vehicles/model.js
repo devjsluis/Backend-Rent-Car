@@ -1,4 +1,6 @@
 const vehiculos = {
+  VIEW: "vehiculo_mas_rentado_ultimos_30_dias",
+  VIEW2: "top_10_vehiculos_mas_usados_ultimos_30_dias",
   TABLA: "vehiculos",
   TABLA2: "vehiculos v",
   CAMPOS1: `v.*,

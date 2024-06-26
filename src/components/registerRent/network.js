@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/get", controller.getRegisterRent);
+router.get("/getAnual", controller.getRegisterRentAnual);
 router.get("/getLastDays", controller.getRegisterRent7Days);
 router.get("/get/:id", controller.getRegisterRentById);
 router.post("/create", controller.createRegisterRent);

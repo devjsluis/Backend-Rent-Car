@@ -2,7 +2,7 @@ const clientes = {
   TABLA1: "clientes",
   TABLA2: "usuarios",
   VIEW: "nuevos_clientes",
-  VIEW2: "clientes_15_dias",
+  VIEW2: "vista_clientes_15_dias",
   CAMPO1: "clientes.ID_USUARIO_ALTA",
   CAMPO2: "usuarios.ID",
   CAMPO3: "clientes.ID",

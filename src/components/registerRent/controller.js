@@ -27,6 +27,16 @@ const getRegisterRent7Days = async (req, res) => {
   }
 };
 
+const getRegisterRentAnual = async (req, res) => {
+  try {
+    const data = await pool.query(mysql.getEverything(model.VIEW2));
+    response.success(res, data, "Ventas anuales", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
 const createRegisterRent = async (req, res) => {
   try {
     if (
@@ -126,4 +136,5 @@ module.exports = {
   reactivateRegisterRent,
   deactivateRegisterRent,
   getRegisterRentById,
+  getRegisterRentAnual,
 };

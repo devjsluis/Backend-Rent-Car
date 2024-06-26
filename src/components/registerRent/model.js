@@ -1,7 +1,8 @@
 const registerRent = {
   TABLA: "registro_rentas",
   TABLA2: "registro_rentas r",
-  VIEW: "ventas_7_dias",
+  VIEW: "vista_ventas_7_dias",
+  VIEW2: "vista_ingresos_anuales",
   COLUMNAS1: `r.*, 
     c.NOMBRE AS NOMBRE_CLIENTE, 
     c.APELLIDOS AS APELLIDOS_CLIENTE, 

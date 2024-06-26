@@ -123,7 +123,10 @@ const loginUser = async (req, res) => {
     }
 
     const [user] = await pool.query(
-      mysql.getEverything(model.TABLA, `WHERE ${model.CONDICION2}`),
+      mysql.getEverything(
+        model.TABLA,
+        `WHERE ${model.CONDICION2} AND ${model.CONDICION3}`
+      ),
       CORREO
     );
     if (!user) {

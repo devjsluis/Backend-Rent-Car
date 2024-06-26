@@ -3,6 +3,26 @@ const pool = require("../../database/conexion");
 const mysql = require("../../database/mysql");
 const model = require("./model");
 
+const getVehiculoMasRentado = async (req, res) => {
+  try {
+    const data = await pool.query(mysql.getEverything(model.VIEW));
+    response.success(res, data, "Vehículo más rentado", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
+const getVehiculosMasRentados = async (req, res) => {
+  try {
+    const data = await pool.query(mysql.getEverything(model.VIEW2));
+    response.success(res, data, "Vehículos más rentados", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
 const getVehicles = async (req, res) => {
   try {
     const query = mysql.getEverything(model.TABLA, `WHERE ${model.CONDICION1}`);
@@ -161,4 +181,6 @@ module.exports = {
   deactivateVehicle,
   reactivateVehicle,
   getVehiclesAll,
+  getVehiculoMasRentado,
+  getVehiculosMasRentados,
 };
