@@ -44,13 +44,11 @@ const createRegisterRent = async (req, res) => {
       req.body.ID_CLIENTE &&
       req.body.ID_VEHICULO &&
       req.body.FECHA_RENTA &&
-      req.body.FECHA_ENTREGA &&
       req.body.FECHA_RETORNO &&
-      req.body.COSTO_TOTAL &&
       req.body.KILOMETRAJE_INICIAL &&
-      req.body.KILOMETRAJE_FINAL &&
       req.body.DESTINO_DE_VIAJE &&
-      req.body.ESTATUS
+      req.body.ESTATUS &&
+      req.body.PAGO_INICIAL
     ) {
       await pool.query(mysql.insert(model.TABLA), req.body);
       response.success(res, req.body, "Registro de renta creado", 201);

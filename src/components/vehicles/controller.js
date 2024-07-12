@@ -51,7 +51,7 @@ const getVehiclesMarca = async (req, res) => {
 const getVehiclesAll = async (req, res) => {
   try {
     const whereClause = model.CONDICIONES2;
-    const columns = model.CAMPOS1;
+    const columns = model.CAMPOS2;
 
     const data = await pool.query(
       mysql.getEverything(model.TABLA2, whereClause, columns)

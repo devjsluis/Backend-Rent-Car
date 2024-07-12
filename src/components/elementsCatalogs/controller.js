@@ -182,6 +182,30 @@ const updateElementsCatalog = async (req, res) => {
 
 const deleteElementsCatalog = async (req, res) => {
   try {
+    const catalogId = req.params.id; // Asumiendo que el ID del catálogo viene como parámetro en la URL
+
+    // Generar la consulta dinámica utilizando getEverything
+    const usageCountQueryVehiculos = mysql.getEverything(
+      model.TABLA2,
+      `WHERE ${model.CONDICION7}`,
+      "COUNT(*) AS count"
+    );
+    const [usageResultVehiculos] = await pool.query(usageCountQueryVehiculos, [
+      catalogId,
+      catalogId,
+      catalogId,
+      catalogId,
+    ]);
+    const usageCountVehiculos = usageResultVehiculos.count;
+
+    if (usageCountVehiculos > 0) {
+      res.status(409).json({
+        message: `El catálogo está siendo utilizado por ${usageCountVehiculos} ${
+          usageCountVehiculos === 1 ? "vehículo" : "vehículos"
+        }  por lo que no puede ser eliminado`,
+      });
+      return;
+    }
     await pool.query(mysql.update(model.TABLA), [
       { ESTATUS: 0 },
       { ID: req.params.id },
