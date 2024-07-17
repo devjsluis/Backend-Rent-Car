@@ -80,6 +80,32 @@ const updateRegisterRent = async (req, res) => {
   }
 };
 
+const deactivateIncompleteRentsByClient = async (req, res) => {
+  try {
+    const clientId = req.params.id;
+    const query = `${mysql.update(model.TABLA)} ${model.CONDICION3}`;
+    const values = [{ ESTATUS: 0 }, { ID_CLIENTE: clientId }];
+    await pool.query(query, values);
+    response.success(res, "", "Registros de renta desactivados", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
+const reactivateIncompleteRentsByClient = async (req, res) => {
+  try {
+    const clientId = req.params.id;
+    const query = `${mysql.update(model.TABLA)} ${model.CONDICION3}`;
+    const values = [{ ESTATUS: 1 }, { ID_CLIENTE: clientId }];
+    await pool.query(query, values);
+    response.success(res, "", "Registros de renta reactivados", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
 const reactivateRegisterRent = async (req, res) => {
   try {
     await pool.query(mysql.update(model.TABLA), [
@@ -135,4 +161,6 @@ module.exports = {
   deactivateRegisterRent,
   getRegisterRentById,
   getRegisterRentAnual,
+  deactivateIncompleteRentsByClient,
+  reactivateIncompleteRentsByClient,
 };

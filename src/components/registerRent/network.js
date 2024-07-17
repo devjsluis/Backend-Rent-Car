@@ -10,5 +10,13 @@ router.post("/create", controller.createRegisterRent);
 router.put("/update/:id", controller.updateRegisterRent);
 router.put("/reactivate/:id", controller.reactivateRegisterRent);
 router.delete("/delete/:id", controller.deactivateRegisterRent);
+router.delete(
+  "/deactivateRents/:id",
+  controller.deactivateIncompleteRentsByClient
+);
+router.put(
+  "/reactivateRents/:id",
+  controller.reactivateIncompleteRentsByClient
+);
 
 module.exports = router;

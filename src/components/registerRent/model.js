@@ -19,6 +19,7 @@ const registerRent = {
     INNER JOIN elementos_catalogos a ON v.ID_ANIO = a.ID 
     ORDER BY r.ID ASC`,
   CONDICION2: "ESTATUS = 1 AND ID = ?",
+  CONDICION3: "AND FINALIZADO = 0",
 };
 
 module.exports = registerRent;
