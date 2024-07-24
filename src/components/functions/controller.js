@@ -5,7 +5,7 @@ const model = require("./model");
 
 const getFunctions = async (req, res) => {
   try {
-    const data = await pool.query(mysql.getWithoutStatus(model.TABLA));
+    const data = await pool.query(mysql.getEverything(model.TABLA));
     response.success(res, data, "Lista de funciones", 200);
   } catch (error) {
     console.log(error);
@@ -19,7 +19,6 @@ const createFunction = async (req, res) => {
       await pool.query(mysql.insert(model.TABLA), req.body);
       response.success(res, req.body, "Función creada", 201);
     } else {
-      console.log(res);
       response.error(res, "Hay datos faltantes", 400);
     }
   } catch (error) {
@@ -60,7 +59,7 @@ const deleteFunction = async (req, res) => {
 const getFunctionById = async (req, res) => {
   try {
     const [elementsCatalog] = await pool.query(
-      mysql.getByIdWithoutStatus(model.TABLA),
+      mysql.getEverything(model.TABLA, `WHERE ${model.CONDICION1}`),
       [req.params.id]
     );
 

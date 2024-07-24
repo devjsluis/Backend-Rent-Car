@@ -5,7 +5,7 @@ const model = require("./model");
 
 const getRol = async (req, res) => {
   try {
-    const data = await pool.query(mysql.getWithoutStatus(model.TABLA));
+    const data = await pool.query(mysql.getEverything(model.TABLA));
     response.success(res, data, "Lista de roles", 200);
   } catch (error) {
     console.log(error);
@@ -58,9 +58,10 @@ const deleteRol = async (req, res) => {
 
 const getRolById = async (req, res) => {
   try {
-    const [rol] = await pool.query(mysql.getByIdWithoutStatus(model.TABLA), [
-      req.params.id,
-    ]);
+    const [rol] = await pool.query(
+      mysql.getEverything(model.TABLA, `WHERE ${model.CONDICION1}`),
+      [req.params.id]
+    );
 
     if (!rol) {
       response.error(res, "Rol no encontrado", 404);

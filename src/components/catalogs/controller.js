@@ -5,7 +5,7 @@ const model = require("./model");
 
 const getCatalogs = async (req, res) => {
   try {
-    const data = await pool.query(mysql.getWithoutStatus(model.TABLA));
+    const data = await pool.query(mysql.getEverything(model.TABLA));
     response.success(res, data, "Lista de catálogos", 200);
   } catch (error) {
     console.log(error);
@@ -58,7 +58,7 @@ const deleteCatalog = async (req, res) => {
 const getCatalogById = async (req, res) => {
   try {
     const [catalog] = await pool.query(
-      mysql.getByIdWithoutStatus(model.TABLA),
+      mysql.getEverything(model.TABLA, `WHERE ${model.CAMPO1} = ?`),
       [req.params.id]
     );
 

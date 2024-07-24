@@ -5,8 +5,32 @@ const model = require("./model");
 
 const getRegisterRent = async (req, res) => {
   try {
-    const data = await pool.query(mysql.getAll(model.TABLA));
+    const columns = model.COLUMNAS1;
+    const whereClause = model.CONDICIONES1;
+    const data = await pool.query(
+      mysql.getEverything(model.TABLA2, whereClause, columns)
+    );
     response.success(res, data, "Lista de registro de rentas", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
+const getRegisterRent7Days = async (req, res) => {
+  try {
+    const data = await pool.query(mysql.getEverything(model.VIEW));
+    response.success(res, data, "Ventas en los últimos 7 días", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
+const getRegisterRentAnual = async (req, res) => {
+  try {
+    const data = await pool.query(mysql.getEverything(model.VIEW2));
+    response.success(res, data, "Ventas anuales", 200);
   } catch (error) {
     console.log(error);
     response.error(res, "Internal Error", 500, error);
@@ -20,13 +44,11 @@ const createRegisterRent = async (req, res) => {
       req.body.ID_CLIENTE &&
       req.body.ID_VEHICULO &&
       req.body.FECHA_RENTA &&
-      req.body.FECHA_ENTREGA &&
       req.body.FECHA_RETORNO &&
-      req.body.COSTO_TOTAL &&
       req.body.KILOMETRAJE_INICIAL &&
-      req.body.KILOMETRAJE_FINAL &&
       req.body.DESTINO_DE_VIAJE &&
-      req.body.ESTATUS
+      req.body.ESTATUS &&
+      req.body.PAGO_INICIAL
     ) {
       await pool.query(mysql.insert(model.TABLA), req.body);
       response.success(res, req.body, "Registro de renta creado", 201);
@@ -58,6 +80,45 @@ const updateRegisterRent = async (req, res) => {
   }
 };
 
+const deactivateIncompleteRentsByClient = async (req, res) => {
+  try {
+    const clientId = req.params.id;
+    const query = `${mysql.update(model.TABLA)} ${model.CONDICION3}`;
+    const values = [{ ESTATUS: 0 }, { ID_CLIENTE: clientId }];
+    await pool.query(query, values);
+    response.success(res, "", "Registros de renta desactivados", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
+const reactivateIncompleteRentsByClient = async (req, res) => {
+  try {
+    const clientId = req.params.id;
+    const query = `${mysql.update(model.TABLA)} ${model.CONDICION3}`;
+    const values = [{ ESTATUS: 1 }, { ID_CLIENTE: clientId }];
+    await pool.query(query, values);
+    response.success(res, "", "Registros de renta reactivados", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
+const reactivateRegisterRent = async (req, res) => {
+  try {
+    await pool.query(mysql.update(model.TABLA), [
+      { ESTATUS: 1 },
+      { ID: req.params.id },
+    ]);
+    response.success(res, "", "Rent register reactivated", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
 const deactivateRegisterRent = async (req, res) => {
   try {
     await pool.query(mysql.update(model.TABLA), [
@@ -73,9 +134,10 @@ const deactivateRegisterRent = async (req, res) => {
 
 const getRegisterRentById = async (req, res) => {
   try {
-    const [registerRent] = await pool.query(mysql.getById(model.TABLA), [
-      req.params.id,
-    ]);
+    const [registerRent] = await pool.query(
+      mysql.getEverything(model.TABLA, model.CONDICION2),
+      [req.params.id]
+    );
 
     if (!registerRent) {
       response.error(res, "Register Rent no encontrado", 404);
@@ -92,8 +154,13 @@ const getRegisterRentById = async (req, res) => {
 
 module.exports = {
   getRegisterRent,
+  getRegisterRent7Days,
   createRegisterRent,
   updateRegisterRent,
+  reactivateRegisterRent,
   deactivateRegisterRent,
   getRegisterRentById,
+  getRegisterRentAnual,
+  deactivateIncompleteRentsByClient,
+  reactivateIncompleteRentsByClient,
 };

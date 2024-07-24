@@ -7,7 +7,7 @@ const jwt = require("../../services/jwt");
 
 const getUsers = async (req, res) => {
   try {
-    const data = await pool.query(mysql.getAll(model.TABLA));
+    const data = await pool.query(mysql.getEverything(model.TABLA));
     response.success(res, data, "Lista de Usuarios", 200);
   } catch (error) {
     console.log(error);
@@ -71,6 +71,19 @@ const updateUser = async (req, res) => {
   }
 };
 
+const reactivateUser = async (req, res) => {
+  try {
+    await pool.query(mysql.update(model.TABLA), [
+      { ESTATUS: 1 },
+      { ID: req.params.id },
+    ]);
+    response.success(res, "", "User reactivated", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Internal Error", 500, error);
+  }
+};
+
 const deactivateUser = async (req, res) => {
   try {
     await pool.query(mysql.update(model.TABLA), [
@@ -86,9 +99,10 @@ const deactivateUser = async (req, res) => {
 
 const getUserById = async (req, res) => {
   try {
-    const [user] = await pool.query(mysql.getById(model.TABLA), [
-      req.params.id,
-    ]);
+    const [user] = await pool.query(
+      mysql.getEverything(model.TABLA, `WHERE ${model.CONDICION1}`),
+      [req.params.id]
+    );
 
     if (!user) {
       response.error(res, "Usuario no encontrado", 404);
@@ -108,7 +122,13 @@ const loginUser = async (req, res) => {
       return response.error(res, "Correo y contraseña son requeridos", 400);
     }
 
-    const [user] = await pool.query(mysql.getByEmail(model.TABLA), CORREO);
+    const [user] = await pool.query(
+      mysql.getEverything(
+        model.TABLA,
+        `WHERE ${model.CONDICION2} AND ${model.CONDICION3}`
+      ),
+      CORREO
+    );
     if (!user) {
       return response.error(res, "Usuario no encontrado", 404);
     }
@@ -125,11 +145,54 @@ const loginUser = async (req, res) => {
   }
 };
 
+const saveProfileImage = async (req, res) => {
+  try {
+    const { imageUrl } = req.body;
+    const userId = req.user.id; // Asume que tienes la identificación del usuario autenticado
+
+    await pool.query(mysql.update(model.TABLA), [
+      { profile_image_url: imageUrl },
+      { ID: userId },
+    ]);
+    response.success(res, { imageUrl }, "Imagen guardada correctamente", 200);
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Error al guardar la imagen", 500, error);
+  }
+};
+
+const getProfileImage = async (req, res) => {
+  try {
+    const userId = req.user.id; // Asume que tienes la identificación del usuario autenticado
+    const [user] = await pool.query(
+      mysql.getEverything(model.TABLA, `WHERE ${model.CONDICION1}`),
+      [userId]
+    );
+
+    if (!user) {
+      response.error(res, "Usuario no encontrado", 404);
+    } else {
+      response.success(
+        res,
+        { imageUrl: user.profile_image_url },
+        "Imagen obtenida correctamente",
+        200
+      );
+    }
+  } catch (error) {
+    console.log(error);
+    response.error(res, "Error al obtener la imagen", 500, error);
+  }
+};
+
 module.exports = {
   getUsers,
   getUserById,
   createUser,
+  reactivateUser,
   updateUser,
   deactivateUser,
   loginUser,
+  saveProfileImage,
+  getProfileImage,
 };
