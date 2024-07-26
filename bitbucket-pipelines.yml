@@ -1,0 +1,27 @@
+pipelines:
+  branches:
+    master:
+      - step:
+          name: Checkout code
+          image: node:20.13.1
+          caches:
+            - node
+          script:
+            - echo "Setting up SSH"
+            - mkdir -p ~/.ssh
+            - echo "$SERVER_SSH_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+            - chmod 600 ~/.ssh/id_rsa
+            - ssh-keyscan -p 2222 $SERVER_HOST >> ~/.ssh/known_hosts
+            - echo "Deploying via SSH"
+            - ssh -i ~/.ssh/id_rsa -p 2222 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST 'sh /home/api-rent-car.reffcovarrubias.com/apis/backend-rent-car/deploy.sh' 
+          services:
+            - docker
+
+definitions:
+  caches:
+    node: ~/.npm
+
+definitions:
+  services:
+    docker:
+      memory: 1024
