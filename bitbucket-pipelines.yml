@@ -13,7 +13,7 @@ pipelines:
             - chmod 600 ~/.ssh/id_rsa
             - ssh-keyscan -p 2222 $SERVER_HOST >> ~/.ssh/known_hosts
             - echo "Deploying via SSH"
-            - ssh -i ~/.ssh/id_rsa -p 2222 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST 'bash -s' < /home/api-rent-car.reffcovarrubias.com/apis/backend-rent-car/deploy.sh
+            - ssh -i ~/.ssh/id_rsa -p 2222 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST 'sh /home/api-rent-car.reffcovarrubias.com/apis/backend-rent-car/deploy.sh' 
           services:
             - docker
 
