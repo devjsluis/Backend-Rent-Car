@@ -4,6 +4,8 @@ const mysql = require("../../database/mysql");
 const model = require("./model");
 const bcrypt = require("bcrypt");
 const jwt = require("../../services/jwt");
+const administratorIdRol = Number(process.env.ADMINISTRATOR_ID_ROL);
+const managerIdRol = Number(process.env.MANAGER_ID_ROL);
 
 const getUsers = async (req, res) => {
   try {
@@ -28,8 +30,9 @@ const createUser = async (req, res) => {
       req.body.ID_ROL
     ) {
       if (
-        req.user.rol === 2 &&
-        (req.body.ID_ROL === "1" || req.body.ID_ROL === "2")
+        req.user.rol === managerIdRol &&
+        (req.body.ID_ROL === process.env.ADMINISTRATOR_ID_ROL ||
+          req.body.ID_ROL === process.env.MANAGER_ID_ROL)
       ) {
         return response.error(
           res,
@@ -70,8 +73,9 @@ const updateUser = async (req, res) => {
     }
 
     if (
-      req.user.rol === 2 &&
-      (targetUser.ID_ROL === 1 || targetUser.ID_ROL === 2)
+      req.user.rol === managerIdRol &&
+      (targetUser.ID_ROL === administratorIdRol ||
+        targetUser.ID_ROL === managerIdRol)
     ) {
       return response.error(
         res,
@@ -110,8 +114,9 @@ const reactivateUser = async (req, res) => {
     }
 
     if (
-      req.user.rol === 2 &&
-      (targetUser.ID_ROL === 1 || targetUser.ID_ROL === 2)
+      req.user.rol === managerIdRol &&
+      (targetUser.ID_ROL === administratorIdRol ||
+        targetUser.ID_ROL === managerIdRol)
     ) {
       return response.error(
         res,
@@ -140,8 +145,9 @@ const deactivateUser = async (req, res) => {
       return response.error(res, "Usuario no encontrado", 404);
     }
     if (
-      req.user.rol === 2 &&
-      (targetUser.ID_ROL === 1 || targetUser.ID_ROL === 2)
+      req.user.rol === managerIdRol &&
+      (targetUser.ID_ROL === administratorIdRol ||
+        targetUser.ID_ROL === managerIdRol)
     ) {
       return response.error(
         res,

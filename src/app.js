@@ -11,6 +11,6 @@ app.use(cors());
 const router = require("./network/routes");
 router(app);
 
-app.listen(3003, () => {
-  console.log("Server is running on port 3003");
+app.listen(process.env.DB_PORT, () => {
+  console.log(`Server is running on port ${process.env.DB_PORT}`);
 });
