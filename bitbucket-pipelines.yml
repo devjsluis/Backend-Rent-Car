@@ -1,33 +1,32 @@
 # This is an example Starter pipeline configuration
 # Use a skeleton to build, test and deploy using manual and parallel steps
 # -----
-# You can specify a custom docker image from Docker Hub as your build environment.
-
-image: node:20-alpine3.19
-
+# You can specify a custom docker image from Docker Hub as your build environment. 
 pipelines:
-  default:
-    - parallel:
+  branches:
+    master:
       - step:
-          name: 'Build and Test'
+          name: Deploy Proyecto
+          image: node:20.13.1
+          caches:
+            - node
           script:
-            - echo "Your build and test goes here..."
-      - step:
-          name: 'Lint'
-          script:
-            - echo "Your linting goes here..."
-      - step:
-          name: 'Security scan'
-          script:
-            - echo "Your security scan goes here..."
-    - step:
-        name: 'Deployment to Staging'
-        deployment: staging
-        script:
-          - echo "Your deployment to staging script goes here..."
-    - step:
-        name: 'Deployment to Production'
-        deployment: production
-        trigger: 'manual'
-        script:
-          - echo "Your deployment to production script goes here..."
+            - echo "Setting up SSH"
+            - mkdir -p ~/.ssh
+            - echo "$SERVER_SSH_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+            - chmod 600 ~/.ssh/id_rsa
+            - ssh-keyscan -p 2222 $SERVER_HOST >> ~/.ssh/known_hosts
+            - echo "Deploying via SSH"
+            - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST 'bash -s' < /home/image-uploader.reffcovarrubias.com/api/image-uploader-backend/deploy.sh
+          services:
+            - docker
+
+definitions:
+  caches:
+    node: ~/.npm
+
+definitions:
+  services:
+    docker:
+      memory: 1024
+
