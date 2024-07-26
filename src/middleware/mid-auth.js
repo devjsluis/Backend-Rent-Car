@@ -22,3 +22,16 @@ exports.isAuth = (req, res, next) => {
   req.user = payload;
   next();
 };
+
+exports.hasRole = (roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.rol)) {
+      return response.error(
+        res,
+        "No tienes permisos para acceder a esta ruta",
+        403
+      );
+    }
+    next();
+  };
+};

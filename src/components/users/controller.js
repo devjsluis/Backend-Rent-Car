@@ -27,6 +27,16 @@ const createUser = async (req, res) => {
       req.body.ESTATUS &&
       req.body.ID_ROL
     ) {
+      if (
+        req.user.rol === 2 &&
+        (req.body.ID_ROL === "1" || req.body.ID_ROL === "2")
+      ) {
+        return response.error(
+          res,
+          "No tienes permisos para crear este tipo de usuario",
+          403
+        );
+      }
       const hashedPassword = await bcrypt.hash(req.body.CONTRASENA, 10);
 
       const user = {
@@ -51,6 +61,24 @@ const createUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
+    const [targetUser] = await pool.query(
+      mysql.getEverything(model.TABLA, model.CONDICION4, model.CAMPO1),
+      [req.params.id]
+    );
+    if (!targetUser) {
+      return response.error(res, "Usuario no encontrado", 404);
+    }
+
+    if (
+      req.user.rol === 2 &&
+      (targetUser.ID_ROL === 1 || targetUser.ID_ROL === 2)
+    ) {
+      return response.error(
+        res,
+        "No tienes permisos para actualizar este tipo de usuario",
+        403
+      );
+    }
     if (req.body) {
       if (req.body.CONTRASENA) {
         const hashedPassword = await bcrypt.hash(req.body.CONTRASENA, 10);
@@ -73,6 +101,24 @@ const updateUser = async (req, res) => {
 
 const reactivateUser = async (req, res) => {
   try {
+    const [targetUser] = await pool.query(
+      mysql.getEverything(model.TABLA, model.CONDICION4, model.CAMPO1),
+      [req.params.id]
+    );
+    if (!targetUser) {
+      return response.error(res, "Usuario no encontrado", 404);
+    }
+
+    if (
+      req.user.rol === 2 &&
+      (targetUser.ID_ROL === 1 || targetUser.ID_ROL === 2)
+    ) {
+      return response.error(
+        res,
+        "No tienes permisos para reactivar este tipo de usuario",
+        403
+      );
+    }
     await pool.query(mysql.update(model.TABLA), [
       { ESTATUS: 1 },
       { ID: req.params.id },
@@ -86,6 +132,23 @@ const reactivateUser = async (req, res) => {
 
 const deactivateUser = async (req, res) => {
   try {
+    const [targetUser] = await pool.query(
+      mysql.getEverything(model.TABLA, model.CONDICION4, model.CAMPO1),
+      [req.params.id]
+    );
+    if (!targetUser) {
+      return response.error(res, "Usuario no encontrado", 404);
+    }
+    if (
+      req.user.rol === 2 &&
+      (targetUser.ID_ROL === 1 || targetUser.ID_ROL === 2)
+    ) {
+      return response.error(
+        res,
+        "No tienes permisos para desactivar este tipo de usuario",
+        403
+      );
+    }
     await pool.query(mysql.update(model.TABLA), [
       { ESTATUS: 0 },
       { ID: req.params.id },
