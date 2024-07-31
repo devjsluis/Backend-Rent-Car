@@ -4,6 +4,8 @@ const mysql = require("../../database/mysql");
 const model = require("./model");
 const bcrypt = require("bcrypt");
 const jwt = require("../../services/jwt");
+const administratorIdRol = Number(process.env.ADMINISTRATOR_ID_ROL);
+const managerIdRol = Number(process.env.MANAGER_ID_ROL);
 
 const getUsers = async (req, res) => {
   try {
@@ -27,9 +29,19 @@ const createUser = async (req, res) => {
       req.body.ESTATUS &&
       req.body.ID_ROL
     ) {
+      // Verificamos si el correo ya existe
+      const existingUser = await pool.query(
+        mysql.getEverything(model.TABLA, `WHERE ${model.CONDICION2}`),
+        [req.body.CORREO]
+      );
+      if (existingUser.length > 0) {
+        return response.error(res, "El correo ya está en uso", 409);
+      }
+
       if (
-        req.user.rol === 2 &&
-        (req.body.ID_ROL === "1" || req.body.ID_ROL === "2")
+        req.user.rol === managerIdRol &&
+        (req.body.ID_ROL === process.env.ADMINISTRATOR_ID_ROL ||
+          req.body.ID_ROL === process.env.MANAGER_ID_ROL)
       ) {
         return response.error(
           res,
@@ -62,7 +74,7 @@ const createUser = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const [targetUser] = await pool.query(
-      mysql.getEverything(model.TABLA, model.CONDICION4, model.CAMPO1),
+      mysql.getEverything(model.TABLA, model.CONDICION4),
       [req.params.id]
     );
     if (!targetUser) {
@@ -70,8 +82,9 @@ const updateUser = async (req, res) => {
     }
 
     if (
-      req.user.rol === 2 &&
-      (targetUser.ID_ROL === 1 || targetUser.ID_ROL === 2)
+      req.user.rol === managerIdRol &&
+      (targetUser.ID_ROL === administratorIdRol ||
+        targetUser.ID_ROL === managerIdRol)
     ) {
       return response.error(
         res,
@@ -80,6 +93,22 @@ const updateUser = async (req, res) => {
       );
     }
     if (req.body) {
+      if (req.body.CORREO && req.body.CORREO !== targetUser.CORREO) {
+        try {
+          const results = await pool.query(
+            mysql.getEverything(model.TABLA, `WHERE ${model.CONDICION2}`),
+            [req.body.CORREO]
+          );
+
+          if (results.length > 0) {
+            return response.error(res, "El correo ya está en uso", 409);
+          }
+        } catch (error) {
+          console.error("Error en la consulta SQL:", error);
+          return response.error(res, "Error del servidor", 500);
+        }
+      }
+
       if (req.body.CONTRASENA) {
         const hashedPassword = await bcrypt.hash(req.body.CONTRASENA, 10);
         req.body.CONTRASENA = hashedPassword;
@@ -110,8 +139,9 @@ const reactivateUser = async (req, res) => {
     }
 
     if (
-      req.user.rol === 2 &&
-      (targetUser.ID_ROL === 1 || targetUser.ID_ROL === 2)
+      req.user.rol === managerIdRol &&
+      (targetUser.ID_ROL === administratorIdRol ||
+        targetUser.ID_ROL === managerIdRol)
     ) {
       return response.error(
         res,
@@ -140,8 +170,9 @@ const deactivateUser = async (req, res) => {
       return response.error(res, "Usuario no encontrado", 404);
     }
     if (
-      req.user.rol === 2 &&
-      (targetUser.ID_ROL === 1 || targetUser.ID_ROL === 2)
+      req.user.rol === managerIdRol &&
+      (targetUser.ID_ROL === administratorIdRol ||
+        targetUser.ID_ROL === managerIdRol)
     ) {
       return response.error(
         res,
