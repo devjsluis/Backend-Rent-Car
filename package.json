@@ -4,7 +4,8 @@
   "description": "backend renta de autos",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon src/app.js"
+    "dev": "nodemon src/app.js",
+    "pull-env": "npx dotenv-vault@latest pull"
   },
   "author": "luisdev",
   "license": "ISC",
