@@ -49,7 +49,6 @@ const createUser = async (req, res) => {
           403
         );
       }
-
       const hashedPassword = await bcrypt.hash(req.body.CONTRASENA, 10);
 
       const user = {
@@ -93,7 +92,6 @@ const updateUser = async (req, res) => {
         403
       );
     }
-
     if (req.body) {
       if (req.body.CORREO && req.body.CORREO !== targetUser.CORREO) {
         try {
